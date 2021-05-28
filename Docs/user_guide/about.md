@@ -22,23 +22,25 @@ The 3D Slicer software is distributed under a BSD-style open source license that
 
 To use Slicer, please read the [3D Slicer Software License Agreement](https://github.com/Slicer/Slicer/blob/master/License.txt) before downloading any binary releases of the Slicer.
 
-### Licensing Context
+### Historical notes about the license
 
 The Slicer License was drafted in 2005 by lawyers working for Brigham and Women's Hospital (BWH), a teaching affiliate of Harvard Medical School, to be BSD-like but with a few extra provisions related to medical software.  It is specific to BWH so it's not directly reusable, but it could serve as a template for projects with similar goals.
 
 It was written in part because BWH was the prime contractor on an NIH-funded development consortium (na-mic.org) and wanted all code contributions to be compatible with ultimate use in real-world medical products (that is, commercial FDA-approved medical devices, which are almost universally closed source even if they build on open software).  Compliance with the Slicer License was required for subcontractors, a group that included General Electric and several universities (MIT, UNC...) who all reviewed and accepted this license.
 
-The license has been in continuous use since 2005 on software (slicer.org) that has been downloaded something like a million times and has been referenced in about 12,000 academic publications (https://www.slicer.org/wiki/Main_Page/SlicerCommunity).  Some of the code is also now being used in several medical products, with this license having been reviewed and accepted by the companies involved.
+The license has been in continuous use since 2005 for the 3D Slicer software package (slicer.org) that as of 2021 has been downloaded more than a million times and has been referenced in about 12,000 academic publications (https://www.slicer.org/wiki/Main_Page/SlicerCommunity). Some of the code is also now being used in several medical products for which this license has been reviewed and accepted by the companies involved.
 
-Here are some of the key points that BWH included to increase their comfort at distributing open source medical software.
+### License terms and reasons
 
-* contributors affirm that they have de-identified any patient data they contribute
+Here are some of the key points that BWH included to make the license suit the case of a large hospital distributing open source medical software.
 
-* contributors explicitly grant royalty free rights if they contribute code covered by a patent they control (i.e. to avoid submarine patents)
+* Contributors affirm that they have de-identified any patient data they contribute to avoid issues with HIPAA or related regulations.
 
-* no GPL or other copyleft allowed because that would make the code basically impossible to use in real medical products
+* Contributors explicitly grant royalty free rights if they contribute code covered by a patent they control (i.e. to avoid submarine patents).
 
-* it states that the code is "designed for research" and "CLINICAL APPLICATIONS ARE NEITHER RECOMMENDED NOR ADVISED" just to make it extra clear that any commercial clinical uses of the code are solely the responsibility of the user and not BWH or the other developers.
+* No GPL or other copyleft code is allowed because that could make complicated and risky to mix Slicer code with private intellectual property, which is often present in regulated medical products.
+
+* The license states that the code is "designed for research" and "CLINICAL APPLICATIONS ARE NEITHER RECOMMENDED NOR ADVISED" to make it extra clear that any commercial clinical uses of the code are solely the responsibility of the user and not BWH or the other developers.  This is a disclaimer rather than a legal restriction.
 
 ## How to cite
 

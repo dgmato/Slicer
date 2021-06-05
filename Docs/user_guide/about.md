@@ -38,7 +38,7 @@ Here are some of the key points that BWH included to make the license suit the c
 
 * Contributors explicitly grant royalty free rights if they contribute code covered by a patent they control (i.e. to avoid submarine patents).
 
-* No GPL or other copyleft code is allowed because that could make complicated and risky to mix Slicer code with private intellectual property, which is often present in regulated medical products.
+* No GPL or other copyleft code is allowed because that could make it complicated and risky to mix Slicer code with private intellectual property, which is often present in regulated medical products.
 
 * The license states that the code is "designed for research" and "CLINICAL APPLICATIONS ARE NEITHER RECOMMENDED NOR ADVISED" to make it extra clear that any commercial clinical uses of the code are solely the responsibility of the user and not BWH or the other developers.  This is a disclaimer rather than a legal restriction.
 

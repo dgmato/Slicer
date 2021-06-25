@@ -812,6 +812,7 @@ protected:
   /// \sa GetFolderDisplayOverrideAllowed(), SetFolderDisplayOverrideAllowed()
   bool FolderDisplayOverrideAllowed;
 
+
   /// Cached value of last found displayable node (it is expensive to determine it)
   vtkWeakPointer<vtkMRMLDisplayableNode> LastFoundDisplayableNode;
 private:

@@ -33,6 +33,9 @@
 
 // MRML includes
 #include <vtkMRMLCrosshairNode.h>
+#include "vtkMRMLSliceLogic.h"
+#include <vtkMRMLModelNode.h>
+#include <vtkMRMLSliceDisplayNode.h>
 
 //---------------------------------------------------------------------------
 // qSlicerViewersToolBarPrivate methods
@@ -199,6 +202,69 @@ void qSlicerViewersToolBarPrivate::init()
                    SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
 
 
+  // Slice Intersections Style
+  QActionGroup* sliceIntersectionsActions = new QActionGroup(q);
+  sliceIntersectionsActions->setExclusive(true);
+
+  this->SliceIntersectionsFullIntersectionAction = new QAction(q);
+  this->SliceIntersectionsFullIntersectionAction->setText(tr("Full lines"));
+  this->SliceIntersectionsFullIntersectionAction->setToolTip(tr("Full slice intersection lines extending across the field of view."));
+  this->SliceIntersectionsFullIntersectionAction->setCheckable(true);
+  this->SliceIntersectionsFullIntersectionAction->setChecked(true);
+
+  this->SliceIntersectionsSkipIntersectionAction = new QAction(q);
+  this->SliceIntersectionsSkipIntersectionAction->setText(tr("Skip line crossings"));
+  this->SliceIntersectionsSkipIntersectionAction->setToolTip(tr("Slice intersection lines extending across the field of view with a gap at the intersection."));
+  this->SliceIntersectionsSkipIntersectionAction->setCheckable(true);
+
+  sliceIntersectionsActions->addAction(this->SliceIntersectionsFullIntersectionAction);
+  sliceIntersectionsActions->addAction(this->SliceIntersectionsSkipIntersectionAction);
+
+  this->SliceIntersectionsMapper = new ctkSignalMapper(q);
+  this->SliceIntersectionsMapper->setMapping(this->SliceIntersectionsSkipIntersectionAction,
+                                    vtkMRMLCrosshairNode::ShowBasic);
+  this->SliceIntersectionsMapper->setMapping(this->SliceIntersectionsFullIntersectionAction,
+                                    vtkMRMLCrosshairNode::ShowIntersection);
+  QObject::connect(sliceIntersectionsActions, SIGNAL(triggered(QAction*)),
+                   this->SliceIntersectionsMapper, SLOT(map(QAction*)));
+  QObject::connect(this->SliceIntersectionsMapper, SIGNAL(mapped(int)),
+                   this, SLOT(setSliceIntersectionsMode(int)));
+
+  // Slice Intersections Thickness
+  QActionGroup* sliceIntersectionsThicknessActions = new QActionGroup(q);
+  sliceIntersectionsThicknessActions->setExclusive(true);
+
+  this->SliceIntersectionsFineAction = new QAction(q);
+  this->SliceIntersectionsFineAction->setText(tr("Fine lines"));
+  this->SliceIntersectionsFineAction->setToolTip(tr("Fine lines."));
+  this->SliceIntersectionsFineAction->setCheckable(true);
+  this->SliceIntersectionsFineAction->setChecked(true);
+
+  this->SliceIntersectionsMediumAction = new QAction(q);
+  this->SliceIntersectionsMediumAction->setText(tr("Medium lines"));
+  this->SliceIntersectionsMediumAction->setToolTip(tr("Medium lines."));
+  this->SliceIntersectionsMediumAction->setCheckable(true);
+
+  this->SliceIntersectionsThickAction = new QAction(q);
+  this->SliceIntersectionsThickAction->setText(tr("Thick lines"));
+  this->SliceIntersectionsThickAction->setToolTip(tr("Thick lines."));
+  this->SliceIntersectionsThickAction->setCheckable(true);
+
+  sliceIntersectionsThicknessActions->addAction(this->SliceIntersectionsFineAction);
+  sliceIntersectionsThicknessActions->addAction(this->SliceIntersectionsMediumAction);
+  sliceIntersectionsThicknessActions->addAction(this->SliceIntersectionsThickAction);
+  this->SliceIntersectionsThicknessMapper = new ctkSignalMapper(q);
+  this->SliceIntersectionsThicknessMapper->setMapping(this->SliceIntersectionsFineAction,
+                                             vtkMRMLCrosshairNode::Fine);
+  this->SliceIntersectionsThicknessMapper->setMapping(this->SliceIntersectionsMediumAction,
+                                             vtkMRMLCrosshairNode::Medium);
+  this->SliceIntersectionsThicknessMapper->setMapping(this->SliceIntersectionsThickAction,
+                                             vtkMRMLCrosshairNode::Thick);
+  QObject::connect(sliceIntersectionsThicknessActions, SIGNAL(triggered(QAction*)),
+                   this->SliceIntersectionsThicknessMapper, SLOT(map(QAction*)));
+  QObject::connect(this->SliceIntersectionsThicknessMapper, SIGNAL(mapped(int)),
+                   this, SLOT(setSliceIntersectionsThickness(int)));
+
   // Interactive slice intersections
   this->IntersectingSlicesInteractiveAction = new QAction(q);
   this->IntersectingSlicesInteractiveAction->setText(tr("Interaction"));
@@ -230,6 +296,10 @@ void qSlicerViewersToolBarPrivate::init()
 
   // Slice Intersections Menu
   this->SliceIntersectionsMenu = new QMenu(tr("Slice intersections"), q);
+  this->SliceIntersectionsMenu->addActions(sliceIntersectionsActions->actions());
+  this->SliceIntersectionsMenu->addSeparator();
+  this->SliceIntersectionsMenu->addActions(sliceIntersectionsThicknessActions->actions());
+  this->SliceIntersectionsMenu->addSeparator();
   this->SliceIntersectionsMenu->addAction(this->IntersectingSlicesInteractiveAction);
   this->SliceIntersectionsMenu->addMenu(this->IntersectingSlicesInteractionModesMenu);
   // Add connection to update slice intersection checkboxes before showing the dropdown menu
@@ -339,8 +409,6 @@ void qSlicerViewersToolBarPrivate::setCrosshairMode(int mode)
 //---------------------------------------------------------------------------
 void qSlicerViewersToolBarPrivate::setCrosshairThickness(int thickness)
 {
-//  Q_Q(qSlicerViewersToolBar);
-
   vtkSmartPointer<vtkCollection> nodes;
   nodes.TakeReference(this->MRMLScene->GetNodesByClass("vtkMRMLCrosshairNode"));
   if (!nodes.GetPointer())
@@ -354,6 +422,23 @@ void qSlicerViewersToolBarPrivate::setCrosshairThickness(int thickness)
     {
     node->SetCrosshairThickness(thickness);
     }
+}
+
+//---------------------------------------------------------------------------
+void qSlicerViewersToolBarPrivate::setSliceIntersectionsThickness(int thickness)
+{
+  qSlicerLayoutManager* layoutManager = qSlicerApplication::application()->layoutManager();
+  foreach(QString sliceViewName, layoutManager->sliceViewNames())
+    {
+    qMRMLSliceWidget* sliceWidget = layoutManager->sliceWidget(sliceViewName);
+    sliceWidget->sliceLogic()->GetSliceModelNode()->GetDisplayNode()->SetLineWidth(thickness);
+    }
+}
+
+//---------------------------------------------------------------------------
+void qSlicerViewersToolBarPrivate::setSliceIntersectionsMode(int mode)
+{
+  qSlicerLayoutManager* layoutManager = qSlicerApplication::application()->layoutManager();
 }
 
 // --------------------------------------------------------------------------

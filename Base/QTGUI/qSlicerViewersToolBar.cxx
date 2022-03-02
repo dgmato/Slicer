@@ -228,7 +228,7 @@ void qSlicerViewersToolBarPrivate::init()
   QObject::connect(sliceIntersectionsActions, SIGNAL(triggered(QAction*)),
                    this->SliceIntersectionsMapper, SLOT(map(QAction*)));
   QObject::connect(this->SliceIntersectionsMapper, SIGNAL(mapped(int)),
-                   this, SLOT(setSliceIntersectionsMode(int)));
+                   this, SLOT(setIntersectingSlicesIntersectionMode(int)));
 
   // Slice Intersections Thickness
   QActionGroup* sliceIntersectionsThicknessActions = new QActionGroup(q);
@@ -263,7 +263,7 @@ void qSlicerViewersToolBarPrivate::init()
   QObject::connect(sliceIntersectionsThicknessActions, SIGNAL(triggered(QAction*)),
                    this->SliceIntersectionsThicknessMapper, SLOT(map(QAction*)));
   QObject::connect(this->SliceIntersectionsThicknessMapper, SIGNAL(mapped(int)),
-                   this, SLOT(setSliceIntersectionsThickness(int)));
+                   this, SLOT(setIntersectingSlicesLineThicknessMode(int)));
 
   // Interactive slice intersections
   this->IntersectingSlicesInteractiveAction = new QAction(q);
@@ -425,20 +425,25 @@ void qSlicerViewersToolBarPrivate::setCrosshairThickness(int thickness)
 }
 
 //---------------------------------------------------------------------------
-void qSlicerViewersToolBarPrivate::setSliceIntersectionsThickness(int thickness)
+void qSlicerViewersToolBarPrivate::setIntersectingSlicesLineThicknessMode(int mode)
 {
-  qSlicerLayoutManager* layoutManager = qSlicerApplication::application()->layoutManager();
-  foreach(QString sliceViewName, layoutManager->sliceViewNames())
+  if (!this->MRMLAppLogic)
     {
-    qMRMLSliceWidget* sliceWidget = layoutManager->sliceWidget(sliceViewName);
-    sliceWidget->sliceLogic()->GetSliceModelNode()->GetDisplayNode()->SetLineWidth(thickness);
+    qWarning() << Q_FUNC_INFO << " failed: application logic is invalid";
+    return;
     }
+  this->MRMLAppLogic->SetIntersectingSlicesLineThicknessMode(mode);
 }
 
 //---------------------------------------------------------------------------
-void qSlicerViewersToolBarPrivate::setSliceIntersectionsMode(int mode)
+void qSlicerViewersToolBarPrivate::setIntersectingSlicesIntersectionMode(int mode)
 {
-  qSlicerLayoutManager* layoutManager = qSlicerApplication::application()->layoutManager();
+  if (!this->MRMLAppLogic)
+    {
+    qWarning() << Q_FUNC_INFO << " failed: application logic is invalid";
+    return;
+    }
+  this->MRMLAppLogic->SetIntersectingSlicesIntersectionMode(mode);
 }
 
 // --------------------------------------------------------------------------

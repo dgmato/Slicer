@@ -90,9 +90,9 @@ public slots:
   void setCrosshairThickness(int);
   void setCrosshairJumpSlicesMode(int);
 
-  void setSliceIntersectionsMode(int);
+  void setIntersectingSlicesIntersectionMode(int);
   void setIntersectingSlicesVisibility(bool);
-  void setSliceIntersectionsThickness(int);
+  void setIntersectingSlicesLineThicknessMode(int);
   void setIntersectingSlicesInteractive(bool);
   void setIntersectingSlicesRotationEnabled(bool);
   void setIntersectingSlicesTranslationEnabled(bool);
